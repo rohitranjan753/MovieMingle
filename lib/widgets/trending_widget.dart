@@ -1,7 +1,7 @@
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:cineflix/Constants/text_constants.dart';
-import 'package:cineflix/Screens/details_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:moviemingle/Constants/text_constants.dart';
+import 'package:moviemingle/Screens/details_screen.dart';
 
 class TrendingWidget extends StatelessWidget {
   const TrendingWidget({

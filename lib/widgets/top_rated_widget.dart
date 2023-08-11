@@ -1,6 +1,8 @@
-import 'package:cineflix/Constants/text_constants.dart';
-import 'package:cineflix/Screens/details_screen.dart';
+
 import 'package:flutter/material.dart';
+import 'package:moviemingle/Screens/details_screen.dart';
+
+import '../Constants/text_constants.dart';
 
 class TopRatedWidget extends StatelessWidget {
   const TopRatedWidget({
