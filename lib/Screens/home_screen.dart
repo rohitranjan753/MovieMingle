@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:moviemingle/Screens/details_screen.dart';
 import 'package:moviemingle/api_services/api.dart';
@@ -110,8 +111,10 @@ class _HomeScreenState extends State<HomeScreen> {
                   } else if (snapshot.hasData) {
                     return TopRatedWidget(snapshot: snapshot);
                   } else {
-                    return const Center(
-                      child: CircularProgressIndicator(),
+                    return  Center(
+                      child: SpinKitChasingDots(
+                        color: Colors.white,
+                      ),
                     );
                   }
                 },

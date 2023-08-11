@@ -19,14 +19,15 @@ class MovieModel {
 
   factory MovieModel.fromJson(Map<String, dynamic> json) {
     return MovieModel(
-        title: json['title'],
-        // title: json['title'] ?? "Some String", in case if empty
-        backDropPath: json['backdrop_path'],
-        originalTitle: json['original_title'],
-        overview: json['overview'],
-        posterPath: json['poster_path'],
-        releaseDate: json['release_date'],
-        voteAverage: json['vote_average'].toDouble());
+        // title: json['title'],
+        title: json['title'] ?? "No name",
+        backDropPath: json['backdrop_path'] ?? "No background",
+        originalTitle: json['original_title'] ?? "No title",
+        overview: json['overview'] ?? "No overview",
+        posterPath: json['poster_path'] ?? "No poster",
+        releaseDate: json['release_date'] ?? "No date",
+        voteAverage: json['vote_average'].toDouble() ?? "No vote"
+    );
   }
 
 
