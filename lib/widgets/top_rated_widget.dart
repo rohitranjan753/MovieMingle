@@ -13,12 +13,12 @@ class TopRatedWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 200,
+    return Container(
+      height: MediaQuery.of(context).size.height * 0.8,
       width: double.infinity,
       child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        physics: const BouncingScrollPhysics(),
+
+        // physics: const BouncingScrollPhysics(),
         itemCount: 10,
         itemBuilder: (context,index){
           return Padding(
@@ -35,9 +35,9 @@ class TopRatedWidget extends StatelessWidget {
               },
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(10),
-                child: SizedBox(
-                  height: 200,
-                  width: 150,
+                child: Container(
+                  height: 300,
+                  width: 250,
                   child: Image.network(
                     '${TextConstants.imagePath}${snapshot.data[index].posterPath}',
                     filterQuality: FilterQuality.high,fit: BoxFit.cover,),
