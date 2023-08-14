@@ -6,6 +6,7 @@ class MovieModel {
   String posterPath;
   String releaseDate;
   double voteAverage;
+  double popularity;
 
   MovieModel({
     required this.title,
@@ -15,6 +16,7 @@ class MovieModel {
     required this.posterPath,
     required this.releaseDate,
     required this.voteAverage,
+    required this.popularity,
   });
 
   factory MovieModel.fromJson(Map<String, dynamic> json) {
@@ -26,7 +28,8 @@ class MovieModel {
         overview: json['overview'] ?? "No overview",
         posterPath: json['poster_path'] ?? "No poster",
         releaseDate: json['release_date'] ?? "No date",
-        voteAverage: json['vote_average'].toDouble() ?? "No vote"
+        voteAverage: json['vote_average'].toDouble() ?? "No vote",
+      popularity: json['popularity'].toDouble() ?? "No popularity",
     );
   }
 

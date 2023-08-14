@@ -1,31 +1,74 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:moviemingle/Constants/text_constants.dart';
-import 'package:moviemingle/models/movie_model.dart';
 import 'package:moviemingle/Screens/details_screen.dart';
+import 'package:moviemingle/models/movie_model.dart';
 
-class TopRatedWidget extends StatelessWidget {
-  final AsyncSnapshot snapshot;
-  final List<MovieModel> movies;
-  final Function(MovieModel) onFavoriteToggle;
+class FavoriteScreen extends StatefulWidget {
   final List<MovieModel> favoriteMovies;
+  final Function(MovieModel) onFavoriteToggle;
 
-  const TopRatedWidget({
-    required this.snapshot,
-    required this.movies,
-    required this.onFavoriteToggle, required this.favoriteMovies,
-  });
+  const FavoriteScreen(
+      {required this.favoriteMovies, required this.onFavoriteToggle});
+
+  @override
+  State<FavoriteScreen> createState() => _FavoriteScreenState();
+}
+
+class _FavoriteScreenState extends State<FavoriteScreen> {
+
+  void _showUnfavoriteConfirmationDialog(MovieModel movie) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Unfavorite Movie'),
+          content: Text('Are you sure you want to remove this movie from favorites?'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              child: Text('No'),
+            ),
+            TextButton(
+              onPressed: () {
+                widget.onFavoriteToggle(movie); // Toggle favorite status
+                setState(() {});
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              child: Text('Yes'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: MediaQuery.of(context).size.height * 0.8,
-      width: double.infinity,
-      child: ListView.builder(
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Favorite Movies'),
+      ),
+      // body: ListView.builder(
+      //   itemCount: favoriteMovies.length,
+      //   itemBuilder: (context, index) {
+      //     final movie = favoriteMovies[index];
+      //     // Build your favorite movie item UI here
+      //     return ListTile(
+      //       title: Text(movie.title),
+      //       // ... other movie details
+      //     );
+      //   },
+      // ),
+
+      body: ListView.builder(
         physics: const BouncingScrollPhysics(),
-        itemCount: movies.length,
+        itemCount: widget.favoriteMovies.length,
         itemBuilder: (context, index) {
-          final movie = movies[index];
+          final movie = widget.favoriteMovies[index];
 
           return Padding(
             padding: const EdgeInsets.all(8.0),
@@ -59,10 +102,15 @@ class TopRatedWidget extends StatelessWidget {
                         Positioned(
                           child: GestureDetector(
                             onTap: () {
-                              onFavoriteToggle(movie); // Toggle favorite status
+                              if (widget.favoriteMovies.contains(movie)) {
+                                _showUnfavoriteConfirmationDialog(movie);
+                              } else {
+                                widget.onFavoriteToggle(movie); // Toggle favorite status
+                                setState(() {});
+                              }
                             },
                             child: Icon(
-                              favoriteMovies.contains(movie)
+                              widget.favoriteMovies.contains(movie)
                                   ? Icons.favorite
                                   : Icons.favorite_border_outlined,
                               size: 30,
@@ -72,6 +120,7 @@ class TopRatedWidget extends StatelessWidget {
                           right: 10,
                           top: 10,
                         ),
+
                       ],
                     ),
                   ),
