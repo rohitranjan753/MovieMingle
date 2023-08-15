@@ -65,11 +65,29 @@ class DetailsScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    'Overview',
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 30, fontWeight: FontWeight.w600),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Overview',
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 30, fontWeight: FontWeight.w600),
+                      ),
+                      IconButton(
+                          onPressed: () {
+                            onFavoriteToggle(movie);
+
+
+                          },
+                          icon: Icon(
+                            favoriteMovies.contains(movie)
+                                ? Icons.favorite
+                                : Icons.favorite_border_outlined,
+                            size: 30,
+                            color: Colors.red,
+                          ))
+                    ],
                   ),
                   const SizedBox(
                     height: 16,
@@ -137,19 +155,7 @@ class DetailsScreen extends StatelessWidget {
                             ],
                           ),
                         ),
-                        IconButton(
-                            onPressed: () {
-                                onFavoriteToggle(movie);
 
-
-                            },
-                            icon: Icon(
-                              favoriteMovies.contains(movie)
-                                  ? Icons.favorite
-                                  : Icons.favorite_border_outlined,
-                              size: 30,
-                              color: Colors.red,
-                            ))
                       ],
                     ),
                   )

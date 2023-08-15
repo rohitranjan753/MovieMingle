@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:moviemingle/Constants/text_constants.dart';
 import 'package:moviemingle/Screens/details_screen.dart';
 import 'package:moviemingle/Screens/favourite_screen.dart';
 import 'package:moviemingle/api_services/api.dart';
@@ -101,7 +102,11 @@ class _HomeScreenState extends State<HomeScreen> {
         itemBuilder: (context, index) {
           return ListTile(
             title: Text(searchResults[index].title),
-            leading: _buildImagePlaceholder(), // Add this line
+            leading: Container(
+              width: 40, // Set the desired width for the image placeholder
+              height: 40, // Set the desired height for the image placeholder
+              child: Image.network('${TextConstants.imagePath}${searchResults[index].posterPath}',scale: 1,), // Show a circular progress indicator
+            ), // Add this line
             onTap: () {
               Navigator.push(
                 context,
@@ -164,13 +169,6 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildImagePlaceholder() {
-    return Container(
-      width: 40, // Set the desired width for the image placeholder
-      height: 40, // Set the desired height for the image placeholder
-      child: CircularProgressIndicator(), // Show a circular progress indicator
-    );
-  }
 
 
 

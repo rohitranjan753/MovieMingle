@@ -33,6 +33,7 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
+          backgroundColor: Colors.white,
           title: Text('Unfavorite Movie'),
           content: Text(
               'Are you sure you want to remove this movie from favorites?'),
