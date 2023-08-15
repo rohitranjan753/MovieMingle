@@ -1,4 +1,5 @@
 class MovieModel {
+  int id;
   String title;
   String backDropPath;
   String originalTitle;
@@ -9,6 +10,7 @@ class MovieModel {
   double popularity;
 
   MovieModel({
+    required this.id,
     required this.title,
     required this.backDropPath,
     required this.originalTitle,
@@ -21,6 +23,7 @@ class MovieModel {
 
   factory MovieModel.fromJson(Map<String, dynamic> json) {
     return MovieModel(
+      id: json['id'] ?? "No id",
         // title: json['title'],
         title: json['title'] ?? "No name",
         backDropPath: json['backdrop_path'] ?? "No background",

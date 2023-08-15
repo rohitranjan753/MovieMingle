@@ -1,17 +1,30 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:moviemingle/Constants/color.dart';
 import 'package:moviemingle/Constants/text_constants.dart';
 import 'package:moviemingle/models/movie_model.dart';
+import 'package:moviemingle/provider/favourite_movie_provider%5D.dart';
 import 'package:moviemingle/widgets/back_button.dart';
+import 'package:provider/provider.dart';
 
 class DetailsScreen extends StatelessWidget {
-  const DetailsScreen({super.key, required this.movie});
-
   final MovieModel movie;
+  final Function(MovieModel) onFavoriteToggle;
+  final List<MovieModel> favoriteMovies;
+
+  const DetailsScreen(
+      {super.key,
+      required this.movie,
+      required this.onFavoriteToggle,
+      required this.favoriteMovies});
+
 
   @override
   Widget build(BuildContext context) {
+    var favoriteMoviesProvider =
+    Provider.of<FavoriteMoviesProvider>(context); // Access the provider
+    double screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       body: CustomScrollView(
         slivers: [
@@ -31,11 +44,17 @@ class DetailsScreen extends StatelessWidget {
                 borderRadius: const BorderRadius.only(
                     bottomLeft: Radius.circular(24),
                     bottomRight: Radius.circular(24)),
-                child: Image.network(
-                  '${TextConstants.imagePath}${movie.posterPath}',
-                  filterQuality: FilterQuality.high,
-                  fit: BoxFit.cover,
-                ),
+                child: screenWidth > 600
+                    ? Image.network(
+                        '${TextConstants.imagePath}${movie.backDropPath}',
+                        filterQuality: FilterQuality.high,
+                        fit: BoxFit.cover,
+                      )
+                    : Image.network(
+                        '${TextConstants.imagePath}${movie.posterPath}',
+                        filterQuality: FilterQuality.high,
+                        fit: BoxFit.cover,
+                      ),
               ),
             ),
           ),
@@ -78,8 +97,11 @@ class DetailsScreen extends StatelessWidget {
                                 style: GoogleFonts.belleza(
                                     fontSize: 17, fontWeight: FontWeight.bold),
                               ),
-                              Text(movie.releaseDate,style: GoogleFonts.roboto(
-                                  fontSize: 17, fontWeight: FontWeight.bold),),
+                              Text(
+                                movie.releaseDate,
+                                style: GoogleFonts.roboto(
+                                    fontSize: 17, fontWeight: FontWeight.bold),
+                              ),
                             ],
                           ),
                         ),
@@ -96,13 +118,31 @@ class DetailsScreen extends StatelessWidget {
                                 style: GoogleFonts.belleza(
                                     fontSize: 17, fontWeight: FontWeight.bold),
                               ),
-                              Icon(Icons.star,color: Colors.amber,),
-                              Text('${movie.voteAverage.toStringAsFixed(1)}/10',style: GoogleFonts.roboto(
-                                  fontSize: 17, fontWeight: FontWeight.bold),),
-
+                              Icon(
+                                Icons.star,
+                                color: Colors.amber,
+                              ),
+                              Text(
+                                '${movie.voteAverage.toStringAsFixed(1)}/10',
+                                style: GoogleFonts.roboto(
+                                    fontSize: 17, fontWeight: FontWeight.bold),
+                              ),
                             ],
                           ),
                         ),
+                        IconButton(
+                            onPressed: () {
+                                onFavoriteToggle(movie);
+
+
+                            },
+                            icon: Icon(
+                              favoriteMovies.contains(movie)
+                                  ? Icons.favorite
+                                  : Icons.favorite_border_outlined,
+                              size: 30,
+                              color: Colors.red,
+                            ))
                       ],
                     ),
                   )
@@ -113,7 +153,4 @@ class DetailsScreen extends StatelessWidget {
         ],
       ),
     );
-  }
-}
-
-
+  }}

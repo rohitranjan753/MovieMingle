@@ -1,9 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:moviemingle/Constants/color.dart';
 import 'package:moviemingle/Screens/home_screen.dart';
+import 'package:moviemingle/provider/favourite_movie_provider%5D.dart';
+import 'package:provider/provider.dart';
 
-void main() {
-  runApp(const MyApp());
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  runApp(MultiProvider(
+    providers: [
+      ChangeNotifierProvider(create: (context) => FavoriteMoviesProvider()),
+    ],
+    child: MyApp(),
+  ),);
 }
 
 class MyApp extends StatelessWidget {
@@ -12,14 +20,17 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Flutter Demo',
-      theme: ThemeData.dark().copyWith(
-        scaffoldBackgroundColor: Colours.scaffoldBgColor,
-        useMaterial3: true,
+    return ChangeNotifierProvider(
+      create: (context) => FavoriteMoviesProvider(),
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'Flutter Demo',
+        theme: ThemeData.dark().copyWith(
+          scaffoldBackgroundColor: Colours.scaffoldBgColor,
+          useMaterial3: true,
+        ),
+        home: const HomeScreen(),
       ),
-      home: const HomeScreen(),
     );
   }
 }

@@ -3,6 +3,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:moviemingle/Constants/text_constants.dart';
 import 'package:moviemingle/models/movie_model.dart';
 import 'package:moviemingle/Screens/details_screen.dart';
+import 'package:moviemingle/provider/favourite_movie_provider%5D.dart';
+import 'package:provider/provider.dart';
 
 class TopRatedWidget extends StatelessWidget {
   final AsyncSnapshot snapshot;
@@ -13,131 +15,220 @@ class TopRatedWidget extends StatelessWidget {
   const TopRatedWidget({
     required this.snapshot,
     required this.movies,
-    required this.onFavoriteToggle, required this.favoriteMovies,
+    required this.onFavoriteToggle,
+    required this.favoriteMovies,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: MediaQuery.of(context).size.height * 0.8,
-      width: double.infinity,
-      child: ListView.builder(
-        physics: const BouncingScrollPhysics(),
-        itemCount: movies.length,
-        itemBuilder: (context, index) {
-          final movie = movies[index];
-
-          return Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: GestureDetector(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => DetailsScreen(movie: movie),
-                  ),
-                );
-              },
-              child: Column(
-                children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(10),
-                      topRight: Radius.circular(10),
+    var favoriteMoviesProvider =
+        Provider.of<FavoriteMoviesProvider>(context); // Access the provider
+    return LayoutBuilder(
+      builder: (BuildContext context, BoxConstraints constraints) {
+        final availableWidth = constraints.maxWidth;
+        if (availableWidth > 600) {
+          // Display movies in a grid when available width is greater than 600
+          return GridView.builder(
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 3,
+              mainAxisSpacing: 10,
+              crossAxisSpacing: 10,
+            ),
+            itemCount: movies.length,
+            itemBuilder: (context, index) {
+              final movie = movies[index];
+              return GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => DetailsScreen(
+                        movie: movie,
+                        onFavoriteToggle: onFavoriteToggle,
+                        favoriteMovies: favoriteMovies,
+                      ),
                     ),
-                    child: Stack(
+                  );
+                },
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(5),
+                        child: Image.network(
+                          '${TextConstants.imagePath}${movie.posterPath}',
+                          filterQuality: FilterQuality.high,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    ),
+                    Text(
+                      '${movie.title.toString()}',
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Positioned(
-                          child: Container(
-                            child: Image.network(
-                              '${TextConstants.imagePath}${movie.posterPath}',
-                              filterQuality: FilterQuality.high,
-                              fit: BoxFit.cover,
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.star,
+                              color: Colors.amberAccent,
                             ),
-                          ),
+                            Text('${movie.voteAverage.toString()}'),
+                          ],
                         ),
-                        Positioned(
-                          child: GestureDetector(
-                            onTap: () {
-                              onFavoriteToggle(movie); // Toggle favorite status
-                            },
-                            child: Icon(
-                              favoriteMovies.contains(movie)
-                                  ? Icons.favorite
-                                  : Icons.favorite_border_outlined,
-                              size: 30,
-                              color: Colors.red, // Customize color as needed
-                            ),
+                        IconButton(
+                          onPressed: () {
+                            onFavoriteToggle(movie);
+                          },
+                          icon: Icon(
+                            favoriteMovies.contains(movie)
+                                ? Icons.favorite
+                                : Icons.favorite_border_outlined,
+                            size: 30,
+                            color: Colors.red,
                           ),
-                          right: 10,
-                          top: 10,
-                        ),
+                        )
                       ],
                     ),
-                  ),
-                  Container(
-                    width: double.infinity,
-                    decoration: const BoxDecoration(
-                      borderRadius: BorderRadius.only(
-                        bottomRight: Radius.circular(10),
-                        bottomLeft: Radius.circular(10),
-                      ),
-                      color: Colors.white30,
-                    ),
-                    child: Column(
-                      children: [
-                        Text(
-                          movie.title,
-                          style: GoogleFonts.belleza(
-                            fontSize: 17,
-                            fontWeight: FontWeight.w600,
+                  ],
+                ),
+              );
+            },
+          );
+        } else {
+          return Container(
+            height: MediaQuery.of(context).size.height * 0.8,
+            width: double.infinity,
+            child: ListView.builder(
+              physics: const BouncingScrollPhysics(),
+              itemCount: movies.length,
+              itemBuilder: (context, index) {
+                final movie = movies[index];
+
+                return Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => DetailsScreen(
+                            movie: movie,
+                            onFavoriteToggle: onFavoriteToggle,
+                            favoriteMovies: favoriteMovies,
                           ),
                         ),
-                        SizedBox(
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      );
+                    },
+                    child: Column(
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(10),
+                            topRight: Radius.circular(10),
+                          ),
+                          child: Stack(
                             children: [
-                              Container(
-                                padding: const EdgeInsets.all(8),
-                                child: Row(
-                                  children: [
-                                    Text(
-                                      'Release: ',
-                                      style: GoogleFonts.belleza(
-                                        fontSize: 17,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    Text(
-                                      movie.releaseDate,
-                                      style: GoogleFonts.roboto(
-                                        fontSize: 17,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ],
+                              Positioned(
+                                child: Container(
+                                  child: Image.network(
+                                    '${TextConstants.imagePath}${movie.posterPath}',
+                                    filterQuality: FilterQuality.high,
+                                    fit: BoxFit.cover,
+                                  ),
                                 ),
                               ),
-                              Container(
-                                padding: const EdgeInsets.all(8),
+                              Positioned(
+                                child: GestureDetector(
+                                  onTap: () {
+                                    onFavoriteToggle(
+                                        movie); // Toggle favorite status
+                                  },
+                                  child: Icon(
+                                    favoriteMovies.contains(movie)
+                                        ? Icons.favorite
+                                        : Icons.favorite_border_outlined,
+                                    size: 30,
+                                    color:
+                                        Colors.red, // Customize color as needed
+                                  ),
+                                ),
+                                right: 10,
+                                top: 10,
+                              ),
+                            ],
+                          ),
+                        ),
+                        Container(
+                          width: double.infinity,
+                          decoration: const BoxDecoration(
+                            borderRadius: BorderRadius.only(
+                              bottomRight: Radius.circular(10),
+                              bottomLeft: Radius.circular(10),
+                            ),
+                            color: Colors.white30,
+                          ),
+                          child: Column(
+                            children: [
+                              Text(
+                                movie.title,
+                                style: GoogleFonts.belleza(
+                                  fontSize: 17,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              SizedBox(
                                 child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Text(
-                                      'Rating:  ',
-                                      style: GoogleFonts.belleza(
-                                        fontSize: 17,
-                                        fontWeight: FontWeight.bold,
+                                    Container(
+                                      padding: const EdgeInsets.all(8),
+                                      child: Row(
+                                        children: [
+                                          Text(
+                                            'Release: ',
+                                            style: GoogleFonts.belleza(
+                                              fontSize: 17,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                          Text(
+                                            movie.releaseDate,
+                                            style: GoogleFonts.roboto(
+                                              fontSize: 17,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                     ),
-                                    Icon(
-                                      Icons.star,
-                                      color: Colors.amber,
-                                    ),
-                                    Text(
-                                      '${movie.voteAverage.toStringAsFixed(1)}/10',
-                                      style: GoogleFonts.roboto(
-                                        fontSize: 17,
-                                        fontWeight: FontWeight.bold,
+                                    Container(
+                                      padding: const EdgeInsets.all(8),
+                                      child: Row(
+                                        children: [
+                                          Text(
+                                            'Rating:  ',
+                                            style: GoogleFonts.belleza(
+                                              fontSize: 17,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                          Icon(
+                                            Icons.star,
+                                            color: Colors.amber,
+                                          ),
+                                          Text(
+                                            '${movie.voteAverage.toStringAsFixed(1)}/10',
+                                            style: GoogleFonts.roboto(
+                                              fontSize: 17,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                     ),
                                   ],
@@ -149,12 +240,12 @@ class TopRatedWidget extends StatelessWidget {
                       ],
                     ),
                   ),
-                ],
-              ),
+                );
+              },
             ),
           );
-        },
-      ),
+        }
+      },
     );
   }
 }

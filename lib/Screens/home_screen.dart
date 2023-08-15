@@ -5,7 +5,10 @@ import 'package:moviemingle/Screens/details_screen.dart';
 import 'package:moviemingle/Screens/favourite_screen.dart';
 import 'package:moviemingle/api_services/api.dart';
 import 'package:moviemingle/models/movie_model.dart';
+import 'package:moviemingle/provider/favourite_movie_provider%5D.dart';
 import 'package:moviemingle/widgets/top_rated_widget.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 enum SortType {
   popularity,
@@ -28,12 +31,25 @@ class _HomeScreenState extends State<HomeScreen> {
   SortType? _selectedSortType; // Change SortType to SortType?
   List<MovieModel> favoriteMovies = [];
 
-
-
   @override
   void initState() {
     super.initState();
     topRatedMovies = Api().getTopRatedMovies();
+    _loadFavorites();
+  }
+
+  void _loadFavorites() async {
+    List<MovieModel> movies =
+        await topRatedMovies; // Wait for movies to be fetched
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    List<String>? favoriteIds = prefs.getStringList('favoriteIds');
+    if (favoriteIds != null) {
+      setState(() {
+        favoriteMovies = favoriteIds.map((id) {
+          return movies.firstWhere((movie) => movie.id.toString() == id);
+        }).toList();
+      });
+    }
   }
 
   // Function to perform search
@@ -56,19 +72,25 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  void _toggleFavorite(MovieModel movie) {
-    setState(() {
-      if (favoriteMovies.contains(movie)) {
-        favoriteMovies.remove(movie);
-      } else {
-        favoriteMovies.add(movie);
-      }
-    });
-  }
+  // Toggle favorite and update SharedPreferences
+  void _toggleFavorite(MovieModel movie) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    List<String> favoriteIds = prefs.getStringList('favoriteIds') ?? [];
 
+    if (favoriteIds.contains(movie.id.toString())) {
+      favoriteIds.remove(movie.id.toString());
+    } else {
+      favoriteIds.add(movie.id.toString());
+    }
+
+    await prefs.setStringList('favoriteIds', favoriteIds);
+    _loadFavorites(); // Reload favorites
+  }
 
   @override
   Widget build(BuildContext context) {
+    var favoriteMoviesProvider =
+        Provider.of<FavoriteMoviesProvider>(context); // Access the provider
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -86,7 +108,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           IconButton(
             icon: Icon(Icons.favorite),
-            onPressed: (){
+            onPressed: () {
               Navigator.push(
                 context,
                 MaterialPageRoute(
@@ -120,13 +142,13 @@ class _HomeScreenState extends State<HomeScreen> {
                 prefixIcon: Icon(Icons.search),
                 suffixIcon: searchResults.isNotEmpty
                     ? IconButton(
-                  onPressed: () {
-                    setState(() {
-                      searchResults = [];
-                    });
-                  },
-                  icon: Icon(Icons.clear),
-                )
+                        onPressed: () {
+                          setState(() {
+                            searchResults = [];
+                          });
+                        },
+                        icon: Icon(Icons.clear),
+                      )
                     : null,
               ),
             ),
@@ -135,65 +157,73 @@ class _HomeScreenState extends State<HomeScreen> {
             Expanded(
               child: searchResults.isNotEmpty
                   ? ListView.builder(
-                itemCount: searchResults.length,
-                itemBuilder: (context, index) {
-                  return ListTile(
-                    title: Text(searchResults[index].title),
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => DetailsScreen(
-                            movie: searchResults[index],
-                          ),
-                        ),
-                      );
-                    },
-                  );
-                },
-              )
+                      itemCount: searchResults.length,
+                      itemBuilder: (context, index) {
+                        return ListTile(
+                          title: Text(searchResults[index].title),
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => DetailsScreen(
+                                  movie: searchResults[index],
+                                  onFavoriteToggle: _toggleFavorite,
+                                  favoriteMovies: favoriteMovies,
+                                ),
+                              ),
+                            );
+                          },
+                        );
+                      },
+                    )
                   : FutureBuilder<List<MovieModel>>(
-                future: topRatedMovies,
-                builder: (context, snapshot) {
-                  if (snapshot.hasError) {
-                    return Center(
-                      child: Text(snapshot.error.toString()),
-                    );
-                  } else if (snapshot.hasData) {
-                    List<MovieModel> movies = snapshot.data!;
+                      future: topRatedMovies,
+                      builder: (context, snapshot) {
+                        if (snapshot.hasError) {
+                          return Center(
+                            child: Text(snapshot.error.toString()),
+                          );
+                        } else if (snapshot.hasData) {
+                          List<MovieModel> movies = snapshot.data!;
 
-                    if (_selectedSortType != null) { // Add this condition
-                      if (_selectedSortType == SortType.popularity) {
-                        movies.sort((a, b) => b.popularity.compareTo(a.popularity));
-                      }
-                      else if (_selectedSortType == SortType.releaseYearAscending) {
-                        movies.sort((a, b) => a.releaseDate.compareTo(b.releaseDate));
-                      }
-                      else if (_selectedSortType == SortType.releaseYearDescending) {
-                        movies.sort((a, b) => b.releaseDate.compareTo(a.releaseDate));
-                      }
+                          if (_selectedSortType != null) {
+                            // Add this condition
+                            if (_selectedSortType == SortType.popularity) {
+                              movies.sort((a, b) =>
+                                  b.popularity.compareTo(a.popularity));
+                            } else if (_selectedSortType ==
+                                SortType.releaseYearAscending) {
+                              movies.sort((a, b) =>
+                                  a.releaseDate.compareTo(b.releaseDate));
+                            } else if (_selectedSortType ==
+                                SortType.releaseYearDescending) {
+                              movies.sort((a, b) =>
+                                  b.releaseDate.compareTo(a.releaseDate));
+                            } else if (_selectedSortType ==
+                                SortType.voteAverageLowToHigh) {
+                              movies.sort((a, b) =>
+                                  a.voteAverage.compareTo(b.voteAverage));
+                            } else if (_selectedSortType ==
+                                SortType.voteAverageHighToLow) {
+                              movies.sort((a, b) =>
+                                  b.voteAverage.compareTo(a.voteAverage));
+                            }
+                          }
 
-                      else if (_selectedSortType == SortType.voteAverageLowToHigh) {
-                        movies.sort((a, b) => a.voteAverage.compareTo(b.voteAverage));
-                      }
-                      else if (_selectedSortType == SortType.voteAverageHighToLow) {
-                        movies.sort((a, b) => b.voteAverage.compareTo(a.voteAverage));
-                      }
-                    }
-
-                    return TopRatedWidget(snapshot: snapshot,
-                    movies: movies,
-                    onFavoriteToggle: _toggleFavorite,
-                        favoriteMovies: favoriteMovies);
-                  } else {
-                    return Center(
-                      child: SpinKitChasingDots(
-                        color: Colors.white,
-                      ),
-                    );
-                  }
-                },
-              ),
+                          return TopRatedWidget(
+                              snapshot: snapshot,
+                              movies: movies,
+                              onFavoriteToggle: _toggleFavorite,
+                              favoriteMovies: favoriteMovies);
+                        } else {
+                          return Center(
+                            child: SpinKitChasingDots(
+                              color: Colors.white,
+                            ),
+                          );
+                        }
+                      },
+                    ),
             ),
           ],
         ),
@@ -251,5 +281,4 @@ class _HomeScreenState extends State<HomeScreen> {
       },
     );
   }
-
 }
