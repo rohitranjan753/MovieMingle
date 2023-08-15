@@ -37,7 +37,8 @@ class DetailsScreen extends StatelessWidget {
             flexibleSpace: FlexibleSpaceBar(
               title: Text(
                 movie.title,
-                style: GoogleFonts.belleza(
+                style: TextStyle(
+                  color: Colors.white,
                     fontSize: 17, fontWeight: FontWeight.w600),
               ),
               background: ClipRRect(
@@ -66,7 +67,8 @@ class DetailsScreen extends StatelessWidget {
                 children: [
                   Text(
                     'Overview',
-                    style: GoogleFonts.openSans(
+                    style: TextStyle(
+                        color: Colors.white,
                         fontSize: 30, fontWeight: FontWeight.w600),
                   ),
                   const SizedBox(
@@ -74,7 +76,8 @@ class DetailsScreen extends StatelessWidget {
                   ),
                   Text(
                     movie.overview,
-                    style: GoogleFonts.poppins(
+                    style: TextStyle(
+                        color: Colors.white,
                         fontSize: 17, fontWeight: FontWeight.w400),
                   ),
                   const SizedBox(
@@ -94,12 +97,14 @@ class DetailsScreen extends StatelessWidget {
                             children: [
                               Text(
                                 'Release: ',
-                                style: GoogleFonts.belleza(
+                                style: TextStyle(
+                                    color: Colors.white,
                                     fontSize: 17, fontWeight: FontWeight.bold),
                               ),
                               Text(
                                 movie.releaseDate,
-                                style: GoogleFonts.roboto(
+                                style: TextStyle(
+                                    color: Colors.white,
                                     fontSize: 17, fontWeight: FontWeight.bold),
                               ),
                             ],
@@ -115,7 +120,8 @@ class DetailsScreen extends StatelessWidget {
                             children: [
                               Text(
                                 'Rating:  ',
-                                style: GoogleFonts.belleza(
+                                style: TextStyle(
+                                    color: Colors.white,
                                     fontSize: 17, fontWeight: FontWeight.bold),
                               ),
                               Icon(
@@ -124,7 +130,8 @@ class DetailsScreen extends StatelessWidget {
                               ),
                               Text(
                                 '${movie.voteAverage.toStringAsFixed(1)}/10',
-                                style: GoogleFonts.roboto(
+                                style: TextStyle(
+                                    color: Colors.white,
                                     fontSize: 17, fontWeight: FontWeight.bold),
                               ),
                             ],

@@ -67,6 +67,8 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
       return Scaffold(
         appBar: AppBar(
           title: Text('Favorite Movies'),
+          backgroundColor: Colors.transparent,
+          centerTitle: true,
         ),
         body: GridView.builder(
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -107,17 +109,21 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
                           top: Radius.circular(10),
                         ),
                         child: Image.network(
-                          '${TextConstants.imagePath}${movie.posterPath}',
+                          '${TextConstants.imagePath}${movie.backDropPath}',
                           filterQuality: FilterQuality.high,
                           fit: BoxFit.cover,
                         ),
                       ),
                     ),
                     Text(
-                      '${movie.title.toString()}',
+                      '${movie.title.toString()}',style: TextStyle(
+                      color: Colors.white
+                    ),
                     ),
                     Text(
-                      'Release year: ${movie.releaseDate.toString()}',
+                      'Release year: ${movie.releaseDate.toString()}',style: TextStyle(
+                        color: Colors.white
+                    ),
                     ),
                     Padding(
                       padding: const EdgeInsets.all(8.0),
@@ -126,12 +132,16 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
                         children: [
                           Row(
                             children: [
-                              Text('Rating: '),
+                              Text('Rating: ',style: TextStyle(
+                                  color: Colors.white
+                              ),),
                               Icon(
                                 Icons.star,
                                 color: Colors.amberAccent,
                               ),
-                              Text('${movie.voteAverage.toString()}'),
+                              Text('${movie.voteAverage.toString()}',style: TextStyle(
+                                  color: Colors.white
+                              ),),
                             ],
                           ),
                           GestureDetector(
@@ -164,7 +174,9 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
     } else {
       return Scaffold(
         appBar: AppBar(
+          backgroundColor: Colors.transparent,
           title: Text('Favorite Movies'),
+          centerTitle: true,
         ),
         body: ListView.builder(
           physics: const BouncingScrollPhysics(),
@@ -237,13 +249,14 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
                           bottomRight: Radius.circular(10),
                           bottomLeft: Radius.circular(10),
                         ),
-                        color: Colors.white30,
+                        color: Colors.black12,
                       ),
                       child: Column(
                         children: [
                           Text(
                             movie.title,
-                            style: GoogleFonts.belleza(
+                            style: TextStyle(
+                              color: Colors.white,
                               fontSize: 17,
                               fontWeight: FontWeight.w600,
                             ),
@@ -258,14 +271,16 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
                                     children: [
                                       Text(
                                         'Release: ',
-                                        style: GoogleFonts.belleza(
+                                        style: TextStyle(
+                                          color: Colors.white,
                                           fontSize: 17,
                                           fontWeight: FontWeight.bold,
                                         ),
                                       ),
                                       Text(
                                         movie.releaseDate,
-                                        style: GoogleFonts.roboto(
+                                        style: TextStyle(
+                                          color: Colors.white,
                                           fontSize: 17,
                                           fontWeight: FontWeight.bold,
                                         ),
@@ -279,7 +294,8 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
                                     children: [
                                       Text(
                                         'Rating:  ',
-                                        style: GoogleFonts.belleza(
+                                        style: TextStyle(
+                                          color: Colors.white,
                                           fontSize: 17,
                                           fontWeight: FontWeight.bold,
                                         ),
@@ -290,7 +306,8 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
                                       ),
                                       Text(
                                         '${movie.voteAverage.toStringAsFixed(1)}/10',
-                                        style: GoogleFonts.roboto(
+                                        style: TextStyle(
+                                          color: Colors.white,
                                           fontSize: 17,
                                           fontWeight: FontWeight.bold,
                                         ),

@@ -38,6 +38,8 @@ class _HomeScreenState extends State<HomeScreen> {
     _loadFavorites();
   }
 
+
+  //Movies which have been marked favourite
   void _loadFavorites() async {
     List<MovieModel> movies =
         await topRatedMovies; // Wait for movies to be fetched
@@ -66,11 +68,13 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  //For filter
   void _sortMovies(SortType sortType) {
     setState(() {
       _selectedSortType = sortType;
     });
   }
+
 
   // Toggle favorite and update SharedPreferences
   void _toggleFavorite(MovieModel movie) async {
@@ -87,150 +91,90 @@ class _HomeScreenState extends State<HomeScreen> {
     _loadFavorites(); // Reload favorites
   }
 
-  @override
-  Widget build(BuildContext context) {
-    var favoriteMoviesProvider =
-        Provider.of<FavoriteMoviesProvider>(context); // Access the provider
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        title: Text(
-          'MovieMingle',
-          style: GoogleFonts.abrilFatface(
-              fontSize: 25, fontWeight: FontWeight.w300),
-        ),
-        centerTitle: true,
-        actions: [
-          IconButton(
-            icon: Icon(Icons.filter_list),
-            onPressed: _showFilterDialog,
-          ),
-          IconButton(
-            icon: Icon(Icons.favorite),
-            onPressed: () {
+
+  //Top rated widget build
+  Expanded _buildTopRatedWidget() {
+    return Expanded(
+      child: searchResults.isNotEmpty
+          ? ListView.builder(
+        itemCount: searchResults.length,
+        itemBuilder: (context, index) {
+          return ListTile(
+            title: Text(searchResults[index].title),
+            leading: _buildImagePlaceholder(), // Add this line
+            onTap: () {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => FavoriteScreen(
-                    favoriteMovies: favoriteMovies,
+                  builder: (context) => DetailsScreen(
+                    movie: searchResults[index],
                     onFavoriteToggle: _toggleFavorite,
+                    favoriteMovies: favoriteMovies,
                   ),
                 ),
               );
             },
-          ),
-        ],
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Top rated movies',
-              style: GoogleFonts.poppins(fontSize: 25),
-            ),
-            const SizedBox(
-              height: 20,
-            ),
-            // Search bar
-            TextField(
-              onChanged: _performSearch,
-              decoration: InputDecoration(
-                hintText: 'Search movies...',
-                prefixIcon: Icon(Icons.search),
-                suffixIcon: searchResults.isNotEmpty
-                    ? IconButton(
-                        onPressed: () {
-                          setState(() {
-                            searchResults = [];
-                          });
-                        },
-                        icon: Icon(Icons.clear),
-                      )
-                    : null,
-              ),
-            ),
-            const SizedBox(height: 10),
-            // Display search results or top rated movies
-            Expanded(
-              child: searchResults.isNotEmpty
-                  ? ListView.builder(
-                      itemCount: searchResults.length,
-                      itemBuilder: (context, index) {
-                        return ListTile(
-                          title: Text(searchResults[index].title),
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => DetailsScreen(
-                                  movie: searchResults[index],
-                                  onFavoriteToggle: _toggleFavorite,
-                                  favoriteMovies: favoriteMovies,
-                                ),
-                              ),
-                            );
-                          },
-                        );
-                      },
-                    )
-                  : FutureBuilder<List<MovieModel>>(
-                      future: topRatedMovies,
-                      builder: (context, snapshot) {
-                        if (snapshot.hasError) {
-                          return Center(
-                            child: Text(snapshot.error.toString()),
-                          );
-                        } else if (snapshot.hasData) {
-                          List<MovieModel> movies = snapshot.data!;
+          );
+        },
+      )
+          : FutureBuilder<List<MovieModel>>(
+        future: topRatedMovies,
+        builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            return Center(
+              child: Text(snapshot.error.toString()),
+            );
+          } else if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(
+              child: SpinKitChasingDots(
+                color: Colors.white,
+              ), // Show a circular progress indicator
+            );
+          } else if (snapshot.hasData) {
+            List<MovieModel> movies = snapshot.data!;
 
-                          if (_selectedSortType != null) {
-                            // Add this condition
-                            if (_selectedSortType == SortType.popularity) {
-                              movies.sort((a, b) =>
-                                  b.popularity.compareTo(a.popularity));
-                            } else if (_selectedSortType ==
-                                SortType.releaseYearAscending) {
-                              movies.sort((a, b) =>
-                                  a.releaseDate.compareTo(b.releaseDate));
-                            } else if (_selectedSortType ==
-                                SortType.releaseYearDescending) {
-                              movies.sort((a, b) =>
-                                  b.releaseDate.compareTo(a.releaseDate));
-                            } else if (_selectedSortType ==
-                                SortType.voteAverageLowToHigh) {
-                              movies.sort((a, b) =>
-                                  a.voteAverage.compareTo(b.voteAverage));
-                            } else if (_selectedSortType ==
-                                SortType.voteAverageHighToLow) {
-                              movies.sort((a, b) =>
-                                  b.voteAverage.compareTo(a.voteAverage));
-                            }
-                          }
+            if (_selectedSortType != null) {
+              // Sort the movies based on the selected sort type
+              if (_selectedSortType == SortType.popularity) {
+                movies.sort((a, b) => b.popularity.compareTo(a.popularity));
+              } else if (_selectedSortType == SortType.releaseYearAscending) {
+                movies.sort((a, b) => a.releaseDate.compareTo(b.releaseDate));
+              } else if (_selectedSortType == SortType.releaseYearDescending) {
+                movies.sort((a, b) => b.releaseDate.compareTo(a.releaseDate));
+              } else if (_selectedSortType == SortType.voteAverageLowToHigh) {
+                movies.sort((a, b) => a.voteAverage.compareTo(b.voteAverage));
+              } else if (_selectedSortType == SortType.voteAverageHighToLow) {
+                movies.sort((a, b) => b.voteAverage.compareTo(a.voteAverage));
+              }
+            }
 
-                          return TopRatedWidget(
-                              snapshot: snapshot,
-                              movies: movies,
-                              onFavoriteToggle: _toggleFavorite,
-                              favoriteMovies: favoriteMovies);
-                        } else {
-                          return Center(
-                            child: SpinKitChasingDots(
-                              color: Colors.white,
-                            ),
-                          );
-                        }
-                      },
-                    ),
-            ),
-          ],
-        ),
+            return TopRatedWidget(
+              snapshot: snapshot,
+              movies: movies,
+              onFavoriteToggle: _toggleFavorite,
+              favoriteMovies: favoriteMovies,
+            );
+          } else {
+            return Center(
+              child: Text("No data available."),
+            );
+          }
+        },
       ),
     );
   }
 
+  Widget _buildImagePlaceholder() {
+    return Container(
+      width: 40, // Set the desired width for the image placeholder
+      height: 40, // Set the desired height for the image placeholder
+      child: CircularProgressIndicator(), // Show a circular progress indicator
+    );
+  }
+
+
+
+  //Show the dialog
   void _showFilterDialog() {
     showDialog(
       context: context,
@@ -281,4 +225,86 @@ class _HomeScreenState extends State<HomeScreen> {
       },
     );
   }
+
+  @override
+  Widget build(BuildContext context) {
+    var favoriteMoviesProvider =
+        Provider.of<FavoriteMoviesProvider>(context); // Access the provider
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        title: Text(
+          'MovieMingle',
+          style: GoogleFonts.poppins(
+              fontSize: 25, fontWeight: FontWeight.w300),
+        ),
+        centerTitle: true,
+        actions: [
+          IconButton(
+            icon: Icon(Icons.filter_list),
+            onPressed: _showFilterDialog,
+          ),
+          IconButton(
+            icon: Icon(Icons.favorite),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => FavoriteScreen(
+                    favoriteMovies: favoriteMovies,
+                    onFavoriteToggle: _toggleFavorite,
+                  ),
+                ),
+              );
+            },
+          ),
+        ],
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          children: [
+            Text(
+              'Top rated movies',
+              style: TextStyle(color: Colors.white,fontSize: 25),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+            // Search bar
+            TextField(
+              style: TextStyle(
+                color: Colors.white
+              ),
+              onChanged: _performSearch,
+              decoration: InputDecoration(
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(30),
+                ),
+                hintText: 'Search movies...',
+                prefixIcon: Icon(Icons.search),
+                suffixIcon: searchResults.isNotEmpty
+                    ? IconButton(
+                        onPressed: () {
+                          setState(() {
+                            searchResults = [];
+                          });
+                        },
+                        icon: Icon(Icons.clear),
+                      )
+                    : null,
+              ),
+            ),
+            const SizedBox(height: 10),
+            // Display search results or top rated movies
+            _buildTopRatedWidget(),
+          ],
+        ),
+      ),
+    );
+  }
+
+
 }

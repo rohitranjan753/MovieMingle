@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:moviemingle/Constants/color.dart';
 import 'package:moviemingle/Constants/text_constants.dart';
 import 'package:moviemingle/models/movie_model.dart';
 import 'package:moviemingle/Screens/details_screen.dart';
@@ -26,7 +27,9 @@ class TopRatedWidget extends StatelessWidget {
     return LayoutBuilder(
       builder: (BuildContext context, BoxConstraints constraints) {
         final availableWidth = constraints.maxWidth;
+        double fontSize = 16;
         if (availableWidth > 600) {
+
           // Display movies in a grid when available width is greater than 600
           return GridView.builder(
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -50,55 +53,75 @@ class TopRatedWidget extends StatelessWidget {
                     ),
                   );
                 },
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(5),
-                        child: Image.network(
-                          '${TextConstants.imagePath}${movie.posterPath}',
-                          filterQuality: FilterQuality.high,
-                          fit: BoxFit.cover,
+                child: Card(
+                  color: Colours.scaffoldBgColor,
+                  elevation: 4,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.vertical(
+                            top: Radius.circular(10),
+                          ),
+                          child: Image.network(
+                            '${TextConstants.imagePath}${movie.backDropPath}',
+                            filterQuality: FilterQuality.high,
+                            fit: BoxFit.cover,
+                          ),
                         ),
                       ),
-                    ),
-                    Text(
-                      '${movie.title.toString()}',
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Row(
+                      Text(
+                        '${movie.title.toString()}',style: TextStyle(color: Colors.white)
+                      ),
+                      Text(
+                        'Release: ${movie.releaseDate.toString()}',style: TextStyle(color: Colors.white),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Icon(
-                              Icons.star,
-                              color: Colors.amberAccent,
+                            Row(
+                              children: [
+                                Text('Rating: ',style: TextStyle(
+                                  color: Colors.white
+                                ),),
+                                Icon(
+                                  Icons.star,
+                                  color: Colors.amberAccent,
+                                ),
+                                Text('${movie.voteAverage.toString()}',style: TextStyle(color: Colors.white),),
+                              ],
                             ),
-                            Text('${movie.voteAverage.toString()}'),
+                            IconButton(
+                              onPressed: () {
+                                onFavoriteToggle(movie);
+                              },
+                              icon: Icon(
+                                favoriteMovies.contains(movie)
+                                    ? Icons.favorite
+                                    : Icons.favorite_border_outlined,
+                                size: 30,
+                                color: Colors.red,
+                              ),
+                            )
                           ],
                         ),
-                        IconButton(
-                          onPressed: () {
-                            onFavoriteToggle(movie);
-                          },
-                          icon: Icon(
-                            favoriteMovies.contains(movie)
-                                ? Icons.favorite
-                                : Icons.favorite_border_outlined,
-                            size: 30,
-                            color: Colors.red,
-                          ),
-                        )
-                      ],
-                    ),
-                  ],
+                      ),
+                    ],
+                  ),
                 ),
               );
             },
           );
         } else {
+
+          //Mobile View
           return Container(
             height: MediaQuery.of(context).size.height * 0.8,
             width: double.infinity,
@@ -169,13 +192,14 @@ class TopRatedWidget extends StatelessWidget {
                               bottomRight: Radius.circular(10),
                               bottomLeft: Radius.circular(10),
                             ),
-                            color: Colors.white30,
+                            color: Colors.black12,
                           ),
                           child: Column(
                             children: [
                               Text(
                                 movie.title,
-                                style: GoogleFonts.belleza(
+                                style: TextStyle(
+                                  color: Colors.white,
                                   fontSize: 17,
                                   fontWeight: FontWeight.w600,
                                 ),
@@ -191,14 +215,16 @@ class TopRatedWidget extends StatelessWidget {
                                         children: [
                                           Text(
                                             'Release: ',
-                                            style: GoogleFonts.belleza(
+                                            style: TextStyle(
+                                              color: Colors.white,
                                               fontSize: 17,
                                               fontWeight: FontWeight.bold,
                                             ),
                                           ),
                                           Text(
                                             movie.releaseDate,
-                                            style: GoogleFonts.roboto(
+                                            style: TextStyle(
+                                              color: Colors.white,
                                               fontSize: 17,
                                               fontWeight: FontWeight.bold,
                                             ),
@@ -212,7 +238,8 @@ class TopRatedWidget extends StatelessWidget {
                                         children: [
                                           Text(
                                             'Rating:  ',
-                                            style: GoogleFonts.belleza(
+                                            style: TextStyle(
+                                              color: Colors.white,
                                               fontSize: 17,
                                               fontWeight: FontWeight.bold,
                                             ),
@@ -223,7 +250,8 @@ class TopRatedWidget extends StatelessWidget {
                                           ),
                                           Text(
                                             '${movie.voteAverage.toStringAsFixed(1)}/10',
-                                            style: GoogleFonts.roboto(
+                                            style: TextStyle(
+                                              color: Colors.white,
                                               fontSize: 17,
                                               fontWeight: FontWeight.bold,
                                             ),

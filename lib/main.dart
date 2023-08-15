@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:moviemingle/Constants/color.dart';
 import 'package:moviemingle/Screens/home_screen.dart';
 import 'package:moviemingle/provider/favourite_movie_provider%5D.dart';
@@ -6,6 +8,10 @@ import 'package:provider/provider.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
   runApp(MultiProvider(
     providers: [
       ChangeNotifierProvider(create: (context) => FavoriteMoviesProvider()),
@@ -26,6 +32,10 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         title: 'Flutter Demo',
         theme: ThemeData.dark().copyWith(
+          textTheme: GoogleFonts.poppinsTextTheme(
+
+          ),
+
           scaffoldBackgroundColor: Colours.scaffoldBgColor,
           useMaterial3: true,
         ),
