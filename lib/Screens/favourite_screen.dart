@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:moviemingle/Constants/color.dart';
 import 'package:moviemingle/Constants/text_constants.dart';
 import 'package:moviemingle/Screens/details_screen.dart';
 import 'package:moviemingle/models/movie_model.dart';
-import 'package:moviemingle/provider/favourite_movie_provider%5D.dart';
+import 'package:moviemingle/provider/favourite_movie_provider.dart';
 import 'package:provider/provider.dart';
 
 class FavoriteScreen extends StatefulWidget {
@@ -94,6 +95,7 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
                 );
               },
               child: Card(
+                color: Colours.scaffoldBgColor,
                 elevation:
                     4.0, // Add elevation to create a card-like appearance
                 shape: RoundedRectangleBorder(

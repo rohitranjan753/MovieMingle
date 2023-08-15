@@ -5,7 +5,7 @@ import 'package:moviemingle/Screens/details_screen.dart';
 import 'package:moviemingle/Screens/favourite_screen.dart';
 import 'package:moviemingle/api_services/api.dart';
 import 'package:moviemingle/models/movie_model.dart';
-import 'package:moviemingle/provider/favourite_movie_provider%5D.dart';
+import 'package:moviemingle/provider/favourite_movie_provider.dart';
 import 'package:moviemingle/widgets/top_rated_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';

@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:moviemingle/Constants/color.dart';
 import 'package:moviemingle/Screens/home_screen.dart';
-import 'package:moviemingle/provider/favourite_movie_provider%5D.dart';
+import 'package:moviemingle/provider/favourite_movie_provider.dart';
 import 'package:provider/provider.dart';
 
 Future<void> main() async {
